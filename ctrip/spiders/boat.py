@@ -12,10 +12,14 @@ class BoatSpider(scrapy.Spider):
     def parse(self, response):
         boats = response.xpath('//*[@class="route_list "]')
         for each_boat in boats:
-            post={}
+            post = {}
+            data = {}
             post['Client.SellerID']=each_boat.xpath('./@data-ubt-sellerid').extract()[0]
             post['VoyaID'] = each_boat.xpath('./@data-ubt-voyaid').extract()[0]
             post['SailingID'] = each_boat.xpath('./@data-ubt-sailingid').extract()[0]
+            #http: // cruise.ctrip.com / c / booking / 5476s30744?sellerid = 30744_5049
+            #data['name']=each_boat.xpath('./a/div[@class="route_info"]/h2[@class="route_title"]/text()').extract()[0]
+            #data['url'] ='http://cruise.ctrip.com/c/booking/'+post['VoyaID']+'s'+post['SailingID']+'?sellerid='+post['Client.SellerID']
             #item = CtripItem()
             #item['name'] = each_boat.xpath('./a/div[@class="route_info"]/h2[@class="route_title"]/text()').extract()[0]
             #item['href'] = each_boat.xpath('./a/@href').extract()[0]#链接
@@ -38,16 +42,30 @@ class BoatSpider(scrapy.Spider):
             #     'Origin': 'http: // cruise.ctrip.com Pragma:no-cache'
             # },
             formdata=post,
-            callback=self.get_price  # 这是指定回调函数，就是发送request之后返回的结果到哪个函数来处理。
+            callback=self.get_price # 这是指定回调函数，就是发送request之后返回的结果到哪个函数来处理。
         )
         return  FormRequest
 
 
-
     def get_price(self,response):
         reponseJosn=response.body
-        item = CtripItem()
-        item['name'] =reponseJosn.decode()
-        yield item
-        # for each_json in reponseJosn:
-        # print(each_json)
+        reponseJosn =reponseJosn.decode()
+        yield self.set_price(reponseJosn)
+        #item['name'] = yield self.set_price(content)
+        # for key in content['Data']['CategoryTypeList']:
+        #     for key_cate in key['CategoryList']:
+        #         item['price'] = (key_cate['Category']['CategoryName'], '-->', key_cate['Price']['InCludeMinPrice'])
+        #
+        # print(item)
+        #print(key_cate['Category']['CategoryName'], '-->', key_cate['Price']['InCludeMinPrice'])
+        #yield item
+
+    def set_price(self,reponseJosn):
+        content = json.loads(reponseJosn)
+        for key in content['Data']['CategoryTypeList']:
+            item = CtripItem()
+            for key_cate in key['CategoryList']:
+                item['name'] = str(key_cate['Category']['CategoryName'])+'->>'+str(key_cate['Price']['InCludeMinPrice'])
+            return item
+
+
