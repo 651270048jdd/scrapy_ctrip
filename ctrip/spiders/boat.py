@@ -62,10 +62,10 @@ class BoatSpider(scrapy.Spider):
 
     def set_price(self,reponseJosn):
         content = json.loads(reponseJosn)
+        item = CtripItem()
         for key in content['Data']['CategoryTypeList']:
-            item = CtripItem()
             for key_cate in key['CategoryList']:
                 item['name'] = str(key_cate['Category']['CategoryName'])+'->>'+str(key_cate['Price']['InCludeMinPrice'])
-            return item
+                return item
 
 
