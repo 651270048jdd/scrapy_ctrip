@@ -6,14 +6,13 @@ from ctrip.items import CtripItem
 class BoatSpider(scrapy.Spider):
     name = 'boat'
     allowed_domains = ['ctrip.com']
-    start_urls = ['http://cruise.ctrip.com/search/s2a25o5.html']
-
+    #start_urls = ['http://cruise.ctrip.com/search/s2a25o5.html']
+    start_urls = ['http://cruise.ctrip.com/search/s2c17-369a25o5.html']
 
     def parse(self, response):
         boats = response.xpath('//*[@class="route_list "]')
         for each_boat in boats:
             post = {}
-            data = {}
             post['Client.SellerID']=each_boat.xpath('./@data-ubt-sellerid').extract()[0]
             post['VoyaID'] = each_boat.xpath('./@data-ubt-voyaid').extract()[0]
             post['SailingID'] = each_boat.xpath('./@data-ubt-sailingid').extract()[0]
@@ -48,6 +47,7 @@ class BoatSpider(scrapy.Spider):
 
 
     def get_price(self,response):
+        #print(self)
         reponseJosn=response.body
         reponseJosn =reponseJosn.decode()
         yield self.set_price(reponseJosn)
@@ -55,17 +55,27 @@ class BoatSpider(scrapy.Spider):
         # for key in content['Data']['CategoryTypeList']:
         #     for key_cate in key['CategoryList']:
         #         item['price'] = (key_cate['Category']['CategoryName'], '-->', key_cate['Price']['InCludeMinPrice'])
-        #
-        # print(item)
+        #print(item)
         #print(key_cate['Category']['CategoryName'], '-->', key_cate['Price']['InCludeMinPrice'])
         #yield item
 
     def set_price(self,reponseJosn):
         content = json.loads(reponseJosn)
         item = CtripItem()
+        # for key in content['Data']['CategoryTypeList']:
+        #     room_info = []
+        #     for key_cate in key['CategoryList']:
+        #         #room_name= str(key_cate['Category']['CategoryName'])+'->>'+str(key_cate['Price']['InCludeMinPrice'])
+        #         #item['room_name']=room_name
+        #         info = str(key_cate['Category']['CategoryName']) + '--->' + str(key_cate['Price']['InCludeMinPrice'])
+        #         # room_info.update(key_cate['Category']['CategoryName'],str(key_cate['Price']['InCludeMinPrice']))
+        #         room_info.append(info)
+        #     item['name']=room_info
+        # return  item
+        room = list()
         for key in content['Data']['CategoryTypeList']:
             for key_cate in key['CategoryList']:
-                item['name'] = str(key_cate['Category']['CategoryName'])+'->>'+str(key_cate['Price']['InCludeMinPrice'])
-                return item
-
-
+                info = str(key_cate['Category']['CategoryName']) + '--->' + str(key_cate['Price']['InCludeMinPrice'])
+                room.append(info)
+        item['name']=room
+        return item

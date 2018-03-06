@@ -9,4 +9,7 @@
 class CtripPipeline(object):
     def process_item(self, item, spider):
         with open("boat.txt",'a') as fp:
-            fp.write(item['name'] + '\n')
+            for i in item['name']:
+                fp.write(i + '\n')
+            fp.write('----------\n')
+            #fp.write(item + '\n')

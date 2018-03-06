@@ -13,7 +13,7 @@ BOT_NAME = 'ctrip'
 
 SPIDER_MODULES = ['ctrip.spiders']
 NEWSPIDER_MODULE = 'ctrip.spiders'
-ITEM_PIPELINES = {'ctrip.pipelines.CtripPipeline':500}
+ITEM_PIPELINES = {'ctrip.pipelines.CtripPipeline':200}
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'ctrip (+http://www.yourdomain.com)'

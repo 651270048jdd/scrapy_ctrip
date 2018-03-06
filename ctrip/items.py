@@ -11,6 +11,7 @@ import scrapy
 class CtripItem(scrapy.Item):
     # define the fields for your item here like:
     name = scrapy.Field()
+    room_name = scrapy.Field()
     # href = scrapy.Field()
     # route = scrapy.Field()
     # route_col=scrapy.Field()#出发航期
